@@ -47,10 +47,10 @@ Return ONLY valid JSON (no text before or after):
 
     const data = await response.json();
 
-    // 🔴 Check OpenAI response is valid
+    // Check response exists
     if (!data.choices || !data.choices[0]) {
       console.error("OpenAI error:", data);
-      return res.status(500).json({ error: "OpenAI failed" });
+      return res.status(500).json({ error: "OpenAI failed", details: data });
     }
 
     let parsed;
@@ -58,7 +58,7 @@ Return ONLY valid JSON (no text before or after):
     try {
       parsed = JSON.parse(data.choices[0].message.content);
     } catch (e) {
-      console.error("Invalid JSON from AI:", data.choices[0].message.content);
+      console.error("Invalid JSON:", data.choices[0].message.content);
       return res.status(500).json({ error: "Invalid AI response format" });
     }
 
