@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CIE IGCSE Computer Science AI Question Generator | Miss Price Teaches</title>
+
+    <style>
+        /* RESET */
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+        }
+
+        body{
+            background:#ffffff;
+            color:#111827;
+            line-height:1.6;
+        }
+
+        a{
+            text-decoration:none;
+            color:inherit;
+        }
+
+        /* HEADER */
+        header{
+            padding:30px 25px;
+            display:flex;
+            align-items:center;
+            gap:30px;
+            border-bottom:1px solid #ccc;
+            flex-wrap:wrap;
+            position:relative;
+        }
+
+        header img{
+            height:120px;
+        }
+
+        /* NAV */
+        nav{
+            display:flex;
+            gap:28px;
+            align-items:center;
+            flex-wrap:wrap;
+        }
+
+        nav a{
+            position:relative;
+            padding:12px 2px 18px;
+            font-weight:600;
+            font-size:17px;
+        }
+
+        /* ORANGE UNDERLINE */
+        nav a::after{
+            content:"";
+            position:absolute;
+            left:0;
+            bottom:6px;
+            width:0;
+            height:4px;
+            background:#f59e0b;
+            transition:width 0.25s ease;
+        }
+
+        nav a::before{
+            content:"";
+            position:absolute;
+            left:2px;
+            bottom:0;
+            width:0;
+            height:2px;
+            background:#fb923c;
+            opacity:0.6;
+            transition:width 0.25s ease;
+        }
+
+        nav a:hover::after{ width:100%; }
+        nav a:hover::before{ width:95%; }
+
+        /* HAMBURGER */
+        .menu-toggle{
+            display:none;
+            flex-direction:column;
+            gap:5px;
+            cursor:pointer;
+            z-index:10001;
+        }
+
+        .menu-toggle span{
+            width:26px;
+            height:3px;
+            background:#111827;
+        }
+
+        /* APP */
+        .app{
+            text-align:center;
+            margin:40px auto;
+            padding:0 20px;
+        }
+
+        .app h1{
+            font-size:40px;
+            font-weight:800;
+        }
+
+        .app h2{
+            color:#6b7280;
+            margin-bottom:20px;
+        }
+
+        /* CARD */
+        .card{
+            background:white;
+            max-width:800px;
+            margin:20px auto;
+            padding:30px;
+            border-radius:18px;
+            box-shadow:0 12px 30px rgba(0,0,0,0.08);
+        }
+
+        /* CONTROLS */
+        .controls{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:20px;
+            margin-bottom:20px;
+            text-align:left;
+        }
+
+        label{
+            font-weight:700;
+            margin-bottom:6px;
+            display:block;
+        }
+
+        select{
+            width:100%;
+            padding:12px;
+            border-radius:10px;
+            border:1px solid #ddd;
+        }
+
+        /* BUTTONS */
+        .generate-btn{
+            background:#f59e0b;
+            color:#111827;
+            padding:12px 18px;
+            border-radius:12px;
+            border:none;
+            font-weight:700;
+            cursor:pointer;
+            margin-top:10px;
+        }
+
+        .generate-btn:hover{
+            background:#fb923c;
+        }
+
+        /* OUTPUT */
+        .output{
+            margin-top:30px;
+            text-align:left;
+        }
+
+        .output h3{
+            margin-top:20px;
+        }
+
+        .output p{
+            background:#f9fafb;
+            padding:14px;
+            border-radius:12px;
+            border:1px solid #e5e7eb;
+            min-height:50px;
+            white-space:pre-wrap;
+        }
+
+        .hidden{
+            display:none;
+        }
+
+        /* ================= MOBILE ================= */
+        @media (max-width:900px){
+            header{
+                flex-direction:column;
+                text-align:center;
+            }
+            header img{
+                height:80px;
+            }
+            .menu-toggle{
+                display:flex;
+                position:absolute;
+                right:20px;
+                top:25px;
+            }
+            #mobileNav{
+                position:absolute;
+                top:100%;
+                left:0;
+                width:100%;
+                background:white;
+                flex-direction:column;
+                max-height:0;
+                overflow:hidden;
+                transition:max-height 0.3s ease;
+                z-index:9999;
+            }
+            #mobileNav.open{
+                max-height:100vh;
+            }
+            #mobileNav a{
+                width:100%;
+                padding:16px;
+                border-bottom:1px solid #eee;
+            }
+            #mobileNav a::before,
+            #mobileNav a::after{
+                display:none;
+            }
+            .controls{
+                grid-template-columns:1fr;
+            }
+            .app h1{
+                font-size:28px;
+            }
+            .card{
+                padding:20px;
+            }
+            .generate-btn{
+                width:100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <img src="logo.png" alt="Logo">
+        <div class="menu-toggle" onclick="toggleMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <nav id="mobileNav">
+            <a href="/">Home</a>
+            <a href="About.html">About</a>
+            <a href="computerScience.html">Computer Science</a>
+            <a href="DataScience&amp;AI.html">Data Science & AI</a>
+            <a href="Maths.html">Maths</a>
+            <a href="Tutoring.html">Tutoring</a>
+            <a href="Testimonials.html">Testimonials</a>
+            <a href="Contact.html">Contact</a>
+        </nav>
+    </header>
+
+    <div class="app">
+        <h1>CIE IGCSE Computer Science</h1>
+        <h2>AI Exam Question Generator</h2>
+
+        <div class="card">
+            <div class="controls">
+                <div>
+                    <label>Topic</label>
+                    <select id="topic">
+                        <optgroup label="Paper 1: Computer Systems">
+                            <option>Data Representation</option>
+                            <option>Data Transmission</option>
+                            <option>Hardware</option>
+                            <option>Software</option>
+                            <option>Internet and its Uses</option>
+                            <option>Automated and Emerging Technologies</option>
+                        </optgroup>
+                        <optgroup label="Paper 2: Algorithms &amp; Programming">
+                            <option>Algorithm Design</option>
+                            <option>Programming</option>
+                            <option>Databases</option>
+                            <option>Boolean Logic</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <div>
+                    <label>Difficulty</label>
+                    <select id="difficulty">
+                        <option>Easy</option>
+                        <option>Exam Standard</option>
+                        <option>Challenge</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generateQuestion()">🎯 Generate Question</button>
+
+            <div class="output">
+                <h3>📘 Question</h3>
+                <p id="question"></p>
+
+                <button class="generate-btn" onclick="toggleSolution(this)">
+                    👀 Show Solution
+                </button>
+
+                <div id="solutionSection" class="hidden">
+                    <h3>✅ Solution & Mark Scheme</h3>
+                    <p id="solution"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu(){
+            const nav = document.getElementById("mobileNav");
+            nav.classList.toggle("open");
+        }
+
+        function toggleSolution(button){
+            const section = document.getElementById("solutionSection");
+            if(section.classList.contains("hidden")){
+                section.classList.remove("hidden");
+                button.innerText = "🙈 Hide Solution";
+            } else {
+                section.classList.add("hidden");
+                button.innerText = "👀 Show Solution";
+            }
+        }
+
+        async function generateQuestion(){
+            const questionBox = document.getElementById("question");
+            const solutionBox = document.getElementById("solution");
+            const section = document.getElementById("solutionSection");
+
+            // Reset UI
+            section.classList.add("hidden");
+            questionBox.innerText = "⏳ Generating CIE Question...";
+            solutionBox.innerText = "";
+
+            const topic = document.getElementById("topic").value;
+            const difficulty = document.getElementById("difficulty").value;
+
+            try {
+                // Using your specific Render URL to bypass local connection issues
+                const response = await fetch('https://ai-question-generator-xsfy.onrender.com/generate', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ topic, difficulty })
+                });
+
+                if (!response.ok) {
+                    throw new Error("Server responded with an error");
+                }
+
+                const data = await response.json();
+                
+                if (data.result) {
+                    // Split the text or just show it all
+                    questionBox.innerText = data.result;
+                    solutionBox.innerText = "The mark scheme is included in the AI text above.";
+                } else {
+                    questionBox.innerText = "Error: " + (data.error || "Unknown error");
+                }
+            } catch (e) {
+                console.error(e);
+                questionBox.innerText = "Connection failed. Make sure your Render server is awake and you are connected to the internet.";
+            }
+        }
+    </script>
+</body>
+</html>
