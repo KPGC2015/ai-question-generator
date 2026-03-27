@@ -1,14 +1,27 @@
 import express from 'express';
 import fetch from 'node-fetch';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); 
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
+// HOME ROUTE: This serves your HTML file when you visit the main URL
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'cie-generator.html'));
+});
+
+// GENERATE ROUTE: This handles the AI logic
 app.post('/generate', async (req, res) => {
     try {
         if (!GOOGLE_API_KEY) {
@@ -20,7 +33,7 @@ app.post('/generate', async (req, res) => {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 contents: [{
-                    parts: [{ text: `You are a CIE IGCSE Computer Science examiner. Generate an exam question, a solution, and a mark scheme for this topic: ${req.body.topic}. Difficulty: ${req.body.difficulty}` }]
+                    parts: [{ text: `You are a CIE IGCSE Computer Science examiner. Generate an exam question, a solution, and a mark scheme for this topic: ${req.body.topic}. Difficulty: ${req.body.difficulty}. Please use clear headings for QUESTION, SOLUTION, and MARK SCHEME.` }]
                 }]
             })
         });
