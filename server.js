@@ -1,72 +1,35 @@
-import express from "express";
-import fetch from "node-fetch";
-import cors from "cors";
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
 
-const app = express();
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Route
-app.post("/generate", async (req, res) => {
-
-  const { topic, difficulty } = req.body;
-
-  const prompt = `
-You are a Cambridge IGCSE Computer Science examiner.
-
-Create ONE exam-style question.
-
-Topic: ${topic}
-Difficulty: ${difficulty}
-
-Return ONLY valid JSON (no text before or after):
-
-{
-  "question": "...",
-  "solution": "...",
-  "marks": "..."
-}
-`;
-
-  try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          { role: "user", content: prompt }
-        ]
-      })
-    });
-
-    const data = await response.json();
-
-    // Check response exists
-    if (!data.choices || !data.choices[0]) {
-      console.error("OpenAI error:", data);
-      return res.status(500).json({ error: "OpenAI failed", details: data });
-    }
-
-    let parsed;
-
+app.post('/generate', async (req, res) => {
     try {
-      parsed = JSON.parse(data.choices[0].message.content);
-    } catch (e) {
-      console.error("Invalid JSON:", data.choices[0].message.content);
-      return res.status(500).json({ error: "Invalid AI response format" });
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                system_instruction: {
+                    parts: [{ text: "You are an expert CIE (Cambridge International Education) Examiner. Generate exam questions that match the specific Assessment Objectives (AOs) and command words (e.g., 'Describe', 'Explain', 'Calculate', 'Evaluate') used in CIE papers. Always provide a clear mark scheme." }]
+                },
+                contents: [{
+                    parts: [{ text: `Generate a CIE exam question about: ${req.body.topic}` }]
+                }],
+                generationConfig: {
+                    temperature: 0.7,
+                    maxOutputTokens: 1000,
+                }
+            })
+        });
+
+        const data = await response.json();
+        
+        // Google's response is nested. This extracts just the text:
+        const aiText = data.candidates[0].content.parts[0].text;
+        
+        res.json({ result: aiText });
+    } catch (error) {
+        console.error("Gemini Error:", error);
+        res.status(500).json({ error: "Failed to generate question" });
     }
-
-    res.json(parsed);
-
-  } catch (err) {
-    console.error("Server error:", err);
-    res.status(500).json({ error: "Server crashed" });
+});
   }
 });
 
