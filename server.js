@@ -111,27 +111,50 @@ app.post('/ai', async (req, res) => {
     }
 
     const { prompt } = req.body;
-    const bannedWords = [
-  "suicide", "kill myself", "self harm",
-  "porn", "sex", "nude",
-  "fuck", "shit", "bitch"
-];
 
-const lowerPrompt = prompt.toLowerCase();
-
-for (let word of bannedWords) {
-  if (lowerPrompt.includes(word)) {
-    return res.status(400).json({
-      error: "This topic is not allowed."
-    });
-  }
-}
-
+    // ✅ Check prompt exists FIRST
     if (!prompt) {
       return res.status(400).json({
         error: 'No prompt provided'
       });
     }
+
+    // =======================
+    // SAFEGUARD FILTER
+    // =======================
+    const bannedWords = [
+      "suicide", "kill myself", "self harm",
+      "porn", "sex", "nude",
+      "fuck", "shit", "bitch"
+    ];
+
+    const lowerPrompt = prompt.toLowerCase();
+
+    for (let word of bannedWords) {
+      if (lowerPrompt.includes(word)) {
+        return res.status(400).json({
+          error: "This topic is not allowed."
+        });
+      }
+    }
+
+    // =======================
+    // AI SAFETY PROMPT
+    // =======================
+    const safePrompt = `
+You are a strict but supportive school teacher.
+
+Rules:
+- Only answer educational questions
+- Do NOT engage in harmful, explicit, or inappropriate content
+- Do NOT provide unsafe advice
+- If the question is inappropriate, say:
+  "I can't help with that, but I can help with your studies."
+- Keep answers clear, simple, and student-friendly
+
+Student question:
+${prompt}
+`;
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
@@ -142,7 +165,7 @@ for (let word of bannedWords) {
           contents: [
             {
               role: "user",
-              parts: [{ text: prompt }]
+              parts: [{ text: safePrompt }]
             }
           ]
         })
