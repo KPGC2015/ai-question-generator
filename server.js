@@ -111,6 +111,21 @@ app.post('/ai', async (req, res) => {
     }
 
     const { prompt } = req.body;
+    const bannedWords = [
+  "suicide", "kill myself", "self harm",
+  "porn", "sex", "nude",
+  "fuck", "shit", "bitch"
+];
+
+const lowerPrompt = prompt.toLowerCase();
+
+for (let word of bannedWords) {
+  if (lowerPrompt.includes(word)) {
+    return res.status(400).json({
+      error: "This topic is not allowed."
+    });
+  }
+}
 
     if (!prompt) {
       return res.status(400).json({
